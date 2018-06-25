@@ -24,3 +24,5 @@
 /configure.log
 
 .DS_Store
+/contrib/vstudio/vc14/.vs
+/contrib/vstudio/vc14/x64/ZlibDllDebug/Tmp
