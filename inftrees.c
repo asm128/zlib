@@ -287,9 +287,7 @@ unsigned short FAR *work;
         }
     }
 
-    /* fill in remaining table entry if code is incomplete (guaranteed to have
-       at most one remaining entry, since if the code is incomplete, the
-       maximum code length that was allowed to get this far is one bit) */
+    /* fill in remaining table entry if code is incomplete (guaranteed to have at most one remaining entry, since if the code is incomplete, the maximum code length that was allowed to get this far is one bit) */
     if (huff != 0) {
         here.op = (unsigned char)64;            /* invalid code marker */
         here.bits = (unsigned char)(len - drop);
