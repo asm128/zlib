@@ -26,3 +26,8 @@
 .DS_Store
 /contrib/vstudio/vc14/.vs
 /contrib/vstudio/vc14/x64/ZlibDllDebug/Tmp
+/contrib/vstudio/vc14/x86/MiniUnzipDebug/Tmp
+/contrib/vstudio/vc14/x86/MiniZipDebug/Tmp
+/contrib/vstudio/vc14/x86/TestZlibDebug/Tmp
+/contrib/vstudio/vc14/x86/TestZlibDllDebug/Tmp
+/contrib/vstudio/vc14/x86/ZlibStatDebug/Tmp
