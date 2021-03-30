@@ -1,6 +1,6 @@
 #IncDir			:= ../../zlib ../../gpk/llc ../../stb ../../nanosvg/src
 Platform		:= Linux.x64
-ProjectName		:= smart
+ProjectName		:= zlibvc
 Configuration	:= Release
 
 C_DEFS			:= -DNOMINMAX
