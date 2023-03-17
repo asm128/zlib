@@ -48,7 +48,7 @@ typedef struct
 } WIN32FILE_IOWIN;
 
 
-static void win32_translate_open_mode(int mode,
+static	void win32_translate_open_mode(int mode,
                                       DWORD* lpdwDesiredAccess,
                                       DWORD* lpdwCreationDisposition,
                                       DWORD* lpdwShareMode,
@@ -74,7 +74,7 @@ static void win32_translate_open_mode(int mode,
     }
 }
 
-static voidpf win32_build_iowin(HANDLE hFile)
+static	voidpf win32_build_iowin(HANDLE hFile)
 {
     voidpf ret=NULL;
 
