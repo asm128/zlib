@@ -130,10 +130,10 @@ void ZLIB_INTERNAL z_error (m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
-const char * ZEXPORT zError(err)
-    int err;
+const char * ZEXPORT zError(errorCode)
+    int errorCode;
 {
-    return ERR_MSG(err);
+    return ERR_MSG(errorCode);
 }
 
 #if defined(_WIN32_WCE)
@@ -146,38 +146,38 @@ const char * ZEXPORT zError(err)
 
 #ifndef HAVE_MEMCPY
 
-void ZLIB_INTERNAL zmemcpy(dest, source, len)
-    Bytef* dest;
+void ZLIB_INTERNAL zmemcpy(destination, source, byteCount)
+    Bytef* destination;
     const Bytef* source;
-    uInt  len;
+    uInt  byteCount;
 {
-    if (len == 0) return;
+    if (byteCount == 0) return;
     do {
-        *dest++ = *source++; /* ??? to be unrolled */
-    } while (--len != 0);
+        *destination++ = *source++; /* ??? to be unrolled */
+    } while (--byteCount != 0);
 }
 
-int ZLIB_INTERNAL zmemcmp(s1, s2, len)
-    const Bytef* s1;
-    const Bytef* s2;
-    uInt  len;
+int ZLIB_INTERNAL zmemcmp(firstBytes, secondBytes, byteCount)
+    const Bytef* firstBytes;
+    const Bytef* secondBytes;
+    uInt  byteCount;
 {
-    uInt j;
+    uInt iByte;
 
-    for (j = 0; j < len; j++) {
-        if (s1[j] != s2[j]) return 2*(s1[j] > s2[j])-1;
+    for (iByte = 0; iByte < byteCount; iByte++) {
+        if (firstBytes[iByte] != secondBytes[iByte]) return 2*(firstBytes[iByte] > secondBytes[iByte])-1;
     }
     return 0;
 }
 
-void ZLIB_INTERNAL zmemzero(dest, len)
-    Bytef* dest;
-    uInt  len;
+void ZLIB_INTERNAL zmemzero(destination, byteCount)
+    Bytef* destination;
+    uInt  byteCount;
 {
-    if (len == 0) return;
+    if (byteCount == 0) return;
     do {
-        *dest++ = 0;  /* ??? to be unrolled */
-    } while (--len != 0);
+        *destination++ = 0;  /* ??? to be unrolled */
+    } while (--byteCount != 0);
 }
 #endif
 
@@ -214,12 +214,12 @@ local ptr_table table[MAX_PTR];
  * a protected system like OS/2. Use Microsoft C instead.
  */
 
-voidpf ZLIB_INTERNAL zcalloc (voidpf opaque, unsigned items, unsigned size)
+voidpf ZLIB_INTERNAL zcalloc (voidpf allocatorContext, unsigned itemCount, unsigned size)
 {
     voidpf buf;
-    ulg bsize = (ulg)items*size;
+    ulg bsize = (ulg)itemCount*size;
 
-    (void)opaque;
+    (void)allocatorContext;
 
     /* If we allocate less than 65520 bytes, we assume that farmalloc
      * will return a usable pointer which doesn't have to be normalized.
@@ -240,19 +240,19 @@ voidpf ZLIB_INTERNAL zcalloc (voidpf opaque, unsigned items, unsigned size)
     return buf;
 }
 
-void ZLIB_INTERNAL zcfree (voidpf opaque, voidpf ptr)
+void ZLIB_INTERNAL zcfree (voidpf allocatorContext, voidpf allocation)
 {
     int n;
 
-    (void)opaque;
+    (void)allocatorContext;
 
-    if (*(ush*)&ptr != 0) { /* object < 64K */
-        farfree(ptr);
+    if (*(ush*)&allocation != 0) { /* object < 64K */
+        farfree(allocation);
         return;
     }
     /* Find the original pointer */
     for (n = 0; n < next_ptr; n++) {
-        if (ptr != table[n].new_ptr) continue;
+        if (allocation != table[n].new_ptr) continue;
 
         farfree(table[n].org_ptr);
         while (++n < next_ptr) {
@@ -277,16 +277,16 @@ void ZLIB_INTERNAL zcfree (voidpf opaque, voidpf ptr)
 #  define _hfree   hfree
 #endif
 
-voidpf ZLIB_INTERNAL zcalloc (voidpf opaque, uInt items, uInt size)
+voidpf ZLIB_INTERNAL zcalloc (voidpf allocatorContext, uInt itemCount, uInt size)
 {
-    (void)opaque;
-    return _halloc((long)items, size);
+    (void)allocatorContext;
+    return _halloc((long)itemCount, size);
 }
 
-void ZLIB_INTERNAL zcfree (voidpf opaque, voidpf ptr)
+void ZLIB_INTERNAL zcfree (voidpf allocatorContext, voidpf allocation)
 {
-    (void)opaque;
-    _hfree(ptr);
+    (void)allocatorContext;
+    _hfree(allocation);
 }
 
 #endif /* M_I86 */
@@ -298,26 +298,26 @@ void ZLIB_INTERNAL zcfree (voidpf opaque, voidpf ptr)
 
 #ifndef STDC
 extern voidp  malloc OF((uInt size));
-extern voidp  calloc OF((uInt items, uInt size));
-extern void   free   OF((voidpf ptr));
+extern voidp  calloc OF((uInt itemCount, uInt size));
+extern void   free   OF((voidpf allocation));
 #endif
 
-voidpf ZLIB_INTERNAL zcalloc (opaque, items, size)
-    voidpf opaque;
-    unsigned items;
+voidpf ZLIB_INTERNAL zcalloc (allocatorContext, itemCount, size)
+    voidpf allocatorContext;
+    unsigned itemCount;
     unsigned size;
 {
-    (void)opaque;
-    return sizeof(uInt) > 2 ? (voidpf)malloc(items * size) :
-                              (voidpf)calloc(items, size);
+    (void)allocatorContext;
+    return sizeof(uInt) > 2 ? (voidpf)malloc(itemCount * size) :
+                              (voidpf)calloc(itemCount, size);
 }
 
-void ZLIB_INTERNAL zcfree (opaque, ptr)
-    voidpf opaque;
-    voidpf ptr;
+void ZLIB_INTERNAL zcfree (allocatorContext, allocation)
+    voidpf allocatorContext;
+    voidpf allocation;
 {
-    (void)opaque;
-    free(ptr);
+    (void)allocatorContext;
+    free(allocation);
 }
 
 #endif /* MY_ZCALLOC */
