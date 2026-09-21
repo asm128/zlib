@@ -7,7 +7,7 @@
 
 #include "zutil.h"
 
-local uLong adler32_combine_ OF((uLong firstChecksum, uLong secondChecksum, z_off64_t secondLength));
+static uLong adler32_combine_ OF((uLong firstChecksum, uLong secondChecksum, z_off64_t secondLength));
 
 #define BASE 65521U     /* largest prime smaller than 65536 */
 #define NMAX 5552
@@ -60,13 +60,14 @@ local uLong adler32_combine_ OF((uLong firstChecksum, uLong secondChecksum, z_of
 #endif
 
 /* ========================================================================= */
-uLong ZEXPORT adler32_z(adler, inputBytes, inputLength)
-    uLong adler;
-    const Bytef *inputBytes;
-    z_size_t inputLength;
+uLong ZEXPORT adler32_z
+    ( uLong        adler
+    , const Bytef  *inputBytes
+    , z_size_t     inputLength
+    )
 {
     unsigned long weightedByteSum;
-    unsigned blocksRemaining;
+    uint32_t blocksRemaining;
 
     /* split Adler-32 into component sums */
     weightedByteSum = (adler >> 16) & 0xffff;
@@ -131,23 +132,25 @@ uLong ZEXPORT adler32_z(adler, inputBytes, inputLength)
 }
 
 /* ========================================================================= */
-uLong ZEXPORT adler32(adler, inputBytes, inputLength)
-    uLong adler;
-    const Bytef *inputBytes;
-    uInt inputLength;
+uLong ZEXPORT adler32
+    ( uLong        adler
+    , const Bytef  *inputBytes
+    , uInt         inputLength
+    )
 {
     return adler32_z(adler, inputBytes, inputLength);
 }
 
 /* ========================================================================= */
-local uLong adler32_combine_(firstChecksum, secondChecksum, secondLength)
-    uLong firstChecksum;
-    uLong secondChecksum;
-    z_off64_t secondLength;
+static uLong adler32_combine_
+    ( uLong      firstChecksum
+    , uLong      secondChecksum
+    , z_off64_t  secondLength
+    )
 {
     unsigned long byteSum;
     unsigned long weightedByteSum;
-    unsigned lengthRemainder;
+    uint32_t lengthRemainder;
 
     /* for negative inputLength, return invalid adler32 as a clue for debugging */
     if (secondLength < 0)
@@ -155,7 +158,7 @@ local uLong adler32_combine_(firstChecksum, secondChecksum, secondLength)
 
     /* the derivation of this formula is left as an exercise for the reader */
     MOD63(secondLength);                /* assumes len2 >= 0 */
-    lengthRemainder = (unsigned)secondLength;
+    lengthRemainder = (uint32_t)secondLength;
     byteSum = firstChecksum & 0xffff;
     weightedByteSum = lengthRemainder * byteSum;
     MOD(weightedByteSum);
@@ -169,18 +172,20 @@ local uLong adler32_combine_(firstChecksum, secondChecksum, secondLength)
 }
 
 /* ========================================================================= */
-uLong ZEXPORT adler32_combine(firstChecksum, secondChecksum, secondLength)
-    uLong firstChecksum;
-    uLong secondChecksum;
-    z_off_t secondLength;
+uLong ZEXPORT adler32_combine
+    ( uLong    firstChecksum
+    , uLong    secondChecksum
+    , z_off_t  secondLength
+    )
 {
     return adler32_combine_(firstChecksum, secondChecksum, secondLength);
 }
 
-uLong ZEXPORT adler32_combine64(firstChecksum, secondChecksum, secondLength)
-    uLong firstChecksum;
-    uLong secondChecksum;
-    z_off64_t secondLength;
+uLong ZEXPORT adler32_combine64
+    ( uLong      firstChecksum
+    , uLong      secondChecksum
+    , z_off64_t  secondLength
+    )
 {
     return adler32_combine_(firstChecksum, secondChecksum, secondLength);
 }

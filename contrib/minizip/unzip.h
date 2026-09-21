@@ -378,7 +378,7 @@ extern int ZEXPORT unzCloseCurrentFile OF((unzFile file));
 
 extern int ZEXPORT unzReadCurrentFile OF((unzFile file,
                       voidp buf,
-                      unsigned len));
+                      uint32_t len));
 /*
   Read bytes from the current file (opened by unzOpenCurrentFile)
   buf contain buffer where data must be copied
@@ -404,7 +404,7 @@ extern int ZEXPORT unzeof OF((unzFile file));
 
 extern int ZEXPORT unzGetLocalExtrafield OF((unzFile file,
                                              voidp buf,
-                                             unsigned len));
+                                             uint32_t len));
 /*
   Read extra field from the current file (opened by unzOpenCurrentFile)
   This is the local-header version of the extra field (sometimes, there is

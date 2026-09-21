@@ -6,26 +6,27 @@
 #include "gzguts.h"
 
 /* Local functions */
-local int gz_load OF((gz_statep, unsigned char *, unsigned, unsigned *));
-local int gz_avail OF((gz_statep));
-local int gz_look OF((gz_statep));
-local int gz_decomp OF((gz_statep));
-local int gz_fetch OF((gz_statep));
-local int gz_skip OF((gz_statep, z_off64_t));
-local z_size_t gz_read OF((gz_statep, voidp, z_size_t));
+static int gz_load OF((gz_statep, unsigned char *, uint32_t, uint32_t *));
+static int gz_avail OF((gz_statep));
+static int gz_look OF((gz_statep));
+static int gz_decomp OF((gz_statep));
+static int gz_fetch OF((gz_statep));
+static int gz_skip OF((gz_statep, z_off64_t));
+static z_size_t gz_read OF((gz_statep, voidp, z_size_t));
 
 /* Use read() to load a buffer -- return -1 on error, otherwise 0.  Read from
    state->fd, and update state->eof, state->err, and state->msg as appropriate.
    This function needs to loop on read(), since read() is not guaranteed to
    read the number of bytes requested, depending on the type of descriptor. */
-local int gz_load(state, buf, len, have)
-    gz_statep state;
-    unsigned char *buf;
-    unsigned len;
-    unsigned *have;
+static int gz_load
+    ( gz_statep      state
+    , unsigned char  *buf
+    , uint32_t       len
+    , uint32_t       *have
+    )
 {
     int ret;
-    unsigned get, max = ((unsigned)-1 >> 2) + 1;
+    uint32_t get, max = ((uint32_t)-1 >> 2) + 1;
 
     *have = 0;
     do {
@@ -35,7 +36,7 @@ local int gz_load(state, buf, len, have)
         ret = read(state->fd, buf + *have, get);
         if (ret <= 0)
             break;
-        *have += (unsigned)ret;
+        *have += (uint32_t)ret;
     } while (*have < len);
     if (ret < 0) {
         gz_error(state, Z_ERRNO, zstrerror());
@@ -53,10 +54,11 @@ local int gz_load(state, buf, len, have)
    If strm->avail_in != 0, then the current data is moved to the beginning of
    the input buffer, and then the remainder of the buffer is loaded with the
    available data from the input file. */
-local int gz_avail(state)
-    gz_statep state;
+static int gz_avail
+    ( gz_statep  state
+    )
 {
-    unsigned got;
+    uint32_t got;
     z_streamp strm = &(state->strm);
 
     if (state->err != Z_OK && state->err != Z_BUF_ERROR)
@@ -65,7 +67,7 @@ local int gz_avail(state)
         if (strm->avail_in) {       /* copy what's there to the start */
             unsigned char *p = state->in;
             unsigned const char *q = strm->next_in;
-            unsigned n = strm->avail_in;
+            uint32_t n = strm->avail_in;
             do {
                 *p++ = *q++;
             } while (--n);
@@ -88,8 +90,9 @@ local int gz_avail(state)
    case, all further file reads will be directly to either the output buffer or
    a user buffer.  If decompressing, the inflate state will be initialized.
    gz_look() will return 0 on success or -1 on failure. */
-local int gz_look(state)
-    gz_statep state;
+static int gz_look
+    ( gz_statep  state
+    )
 {
     z_streamp strm = &(state->strm);
 
@@ -172,11 +175,12 @@ local int gz_look(state)
    data.  If the gzip stream completes, state->how is reset to LOOK to look for
    the next gzip stream or raw data, once state->x.have is depleted.  Returns 0
    on success, -1 on failure. */
-local int gz_decomp(state)
-    gz_statep state;
+static int gz_decomp
+    ( gz_statep  state
+    )
 {
     int ret = Z_OK;
-    unsigned had;
+    uint32_t had;
     z_streamp strm = &(state->strm);
 
     /* fill output buffer up to end of deflate stream */
@@ -226,8 +230,9 @@ local int gz_decomp(state)
    looked for to determine whether to copy or decompress.  Returns -1 on error,
    otherwise 0.  gz_fetch() will leave state->how as COPY or GZIP unless the
    end of the input file has been reached and all data has been processed.  */
-local int gz_fetch(state)
-    gz_statep state;
+static int gz_fetch
+    ( gz_statep  state
+    )
 {
     z_streamp strm = &(state->strm);
 
@@ -256,18 +261,19 @@ local int gz_fetch(state)
 }
 
 /* Skip len uncompressed bytes of output.  Return -1 on error, 0 on success. */
-local int gz_skip(state, len)
-    gz_statep state;
-    z_off64_t len;
+static int gz_skip
+    ( gz_statep  state
+    , z_off64_t  len
+    )
 {
-    unsigned n;
+    uint32_t n;
 
     /* skip over len bytes or reach end-of-file, whichever comes first */
     while (len)
         /* skip over whatever is in output buffer */
         if (state->x.have) {
             n = GT_OFF(state->x.have) || (z_off64_t)state->x.have > len ?
-                (unsigned)len : state->x.have;
+                (uint32_t)len : state->x.have;
             state->x.have -= n;
             state->x.next += n;
             state->x.pos += n;
@@ -291,13 +297,14 @@ local int gz_skip(state, len)
    input.  Return the number of bytes read.  If zero is returned, either the
    end of file was reached, or there was an error.  state->err must be
    consulted in that case to determine which. */
-local z_size_t gz_read(state, buf, len)
-    gz_statep state;
-    voidp buf;
-    z_size_t len;
+static z_size_t gz_read
+    ( gz_statep  state
+    , voidp      buf
+    , z_size_t   len
+    )
 {
     z_size_t got;
-    unsigned n;
+    uint32_t n;
 
     /* if len is zero, avoid unnecessary operations */
     if (len == 0)
@@ -372,10 +379,11 @@ local z_size_t gz_read(state, buf, len)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzread(file, buf, len)
-    gzFile file;
-    voidp buf;
-    unsigned len;
+int ZEXPORT gzread
+    ( gzFile    file
+    , voidp     buf
+    , uint32_t  len
+    )
 {
     gz_statep state;
 
@@ -408,11 +416,12 @@ int ZEXPORT gzread(file, buf, len)
 }
 
 /* -- see zlib.h -- */
-z_size_t ZEXPORT gzfread(buf, size, nitems, file)
-    voidp buf;
-    z_size_t size;
-    z_size_t nitems;
-    gzFile file;
+z_size_t ZEXPORT gzfread
+    ( voidp     buf
+    , z_size_t  size
+    , z_size_t  nitems
+    , gzFile    file
+    )
 {
     z_size_t len;
     gz_statep state;
@@ -444,8 +453,9 @@ z_size_t ZEXPORT gzfread(buf, size, nitems, file)
 #else
 #  undef gzgetc
 #endif
-int ZEXPORT gzgetc(file)
-    gzFile file;
+int ZEXPORT gzgetc
+    ( gzFile  file
+    )
 {
     int ret;
     unsigned char buf[1];
@@ -473,16 +483,18 @@ int ZEXPORT gzgetc(file)
     return ret < 1 ? -1 : buf[0];
 }
 
-int ZEXPORT gzgetc_(file)
-gzFile file;
+int ZEXPORT gzgetc_
+    ( gzFile  file
+    )
 {
     return gzgetc(file);
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzungetc(c, file)
-    int c;
-    gzFile file;
+int ZEXPORT gzungetc
+    ( int     c
+    , gzFile  file
+    )
 {
     gz_statep state;
 
@@ -540,12 +552,13 @@ int ZEXPORT gzungetc(c, file)
 }
 
 /* -- see zlib.h -- */
-char * ZEXPORT gzgets(file, buf, len)
-    gzFile file;
-    char *buf;
-    int len;
+char * ZEXPORT gzgets
+    ( gzFile  file
+    , char    *buf
+    , int     len
+    )
 {
-    unsigned left, n;
+    uint32_t left, n;
     char *str;
     unsigned char *eol;
     gz_statep state;
@@ -571,7 +584,7 @@ char * ZEXPORT gzgets(file, buf, len)
        append a terminating zero to the string (we don't check for a zero in
        the contents, let the user worry about that) */
     str = buf;
-    left = (unsigned)len - 1;
+    left = (uint32_t)len - 1;
     if (left) do {
         /* assure that something is in the output buffer */
         if (state->x.have == 0 && gz_fetch(state) == -1)
@@ -585,7 +598,7 @@ char * ZEXPORT gzgets(file, buf, len)
         n = state->x.have > left ? left : state->x.have;
         eol = (unsigned char *)memchr(state->x.next, '\n', n);
         if (eol != NULL)
-            n = (unsigned)(eol - state->x.next) + 1;
+            n = (uint32_t)(eol - state->x.next) + 1;
 
         /* copy through end-of-line, or remainder if not found */
         memcpy(buf, state->x.next, n);
@@ -604,8 +617,9 @@ char * ZEXPORT gzgets(file, buf, len)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzdirect(file)
-    gzFile file;
+int ZEXPORT gzdirect
+    ( gzFile  file
+    )
 {
     gz_statep state;
 
@@ -624,8 +638,9 @@ int ZEXPORT gzdirect(file)
 }
 
 /* -- see zlib.h -- */
-int ZEXPORT gzclose_r(file)
-    gzFile file;
+int ZEXPORT gzclose_r
+    ( gzFile  file
+    )
 {
     int ret, err;
     gz_statep state;

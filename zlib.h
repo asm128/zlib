@@ -773,7 +773,7 @@ ZEXTERN uLong ZEXPORT deflateBound OF((z_streamp strm,
 */
 
 ZEXTERN int ZEXPORT deflatePending OF((z_streamp strm,
-                                       unsigned *pending,
+                                       uint32_t *pending,
                                        int *bits));
 /*
      deflatePending() returns the number of bytes and bits of output that have
@@ -1089,9 +1089,9 @@ ZEXTERN int ZEXPORT inflateBackInit OF((z_streamp strm, int windowBits,
    the version of the header file.
 */
 
-typedef unsigned (*in_func) OF((void FAR *,
+typedef uint32_t (*in_func) OF((void FAR *,
                                 z_const unsigned char FAR * FAR *));
-typedef int (*out_func) OF((void FAR *, unsigned char FAR *, unsigned));
+typedef int (*out_func) OF((void FAR *, unsigned char FAR *, uint32_t));
 
 ZEXTERN int ZEXPORT inflateBack OF((z_streamp strm,
                                     in_func in, void FAR *in_desc,
@@ -1360,7 +1360,7 @@ ZEXTERN gzFile ZEXPORT gzdopen OF((int fd, const char *mode));
    will not detect if fd is invalid (unless fd is -1).
 */
 
-ZEXTERN int ZEXPORT gzbuffer OF((gzFile file, unsigned size));
+ZEXTERN int ZEXPORT gzbuffer OF((gzFile file, uint32_t size));
 /*
      Set the internal buffer size used by this library's functions.  The
    default buffer size is 8192 bytes.  This function must be called after
@@ -1387,7 +1387,7 @@ ZEXTERN int ZEXPORT gzsetparams OF((gzFile file, int level, int strategy));
    or Z_MEM_ERROR if there is a memory allocation error.
 */
 
-ZEXTERN int ZEXPORT gzread OF((gzFile file, voidp buf, unsigned len));
+ZEXTERN int ZEXPORT gzread OF((gzFile file, voidp buf, uint32_t len));
 /*
      Reads the given number of uncompressed bytes from the compressed file.  If
    the input file is not in gzip format, gzread copies the given number of
@@ -1444,7 +1444,7 @@ ZEXTERN z_size_t ZEXPORT gzfread OF((voidp buf, z_size_t size, z_size_t nitems,
 */
 
 ZEXTERN int ZEXPORT gzwrite OF((gzFile file,
-                                voidpc buf, unsigned len));
+                                voidpc buf, uint32_t len));
 /*
      Writes the given number of uncompressed bytes into the compressed file.
    gzwrite returns the number of uncompressed bytes written or 0 in case of
@@ -1815,7 +1815,7 @@ ZEXTERN int ZEXPORT inflateBackInit_ OF((z_streamp strm, int windowBits,
  * only be used by the gzgetc() macro.  You have been warned.
  */
 struct gzFile_s {
-    unsigned have;
+    uint32_t have;
     unsigned char *next;
     z_off64_t pos;
 };

@@ -33,12 +33,6 @@
    typedef long ptrdiff_t;  /* guess -- will be caught if guess is wrong */
 #endif
 
-#ifndef local
-#  define local static
-#endif
-/* since "static" is used to mean two completely different things in C, we
-   define "local" for the non-static meaning of "static", for readability
-   (compile with -Dlocal if your debugger can't find static symbols) */
 
 typedef unsigned char  uch;
 typedef uch FAR uchf;
@@ -254,8 +248,8 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif
 
 #ifndef Z_SOLO
-   voidpf ZLIB_INTERNAL zcalloc OF((voidpf opaque, unsigned items,
-                                    unsigned size));
+   voidpf ZLIB_INTERNAL zcalloc OF((voidpf opaque, uint32_t items,
+                                    uint32_t size));
    void ZLIB_INTERNAL zcfree  OF((voidpf opaque, voidpf ptr));
 #endif
 

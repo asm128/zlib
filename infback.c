@@ -16,7 +16,7 @@
 #include "inffast.h"
 
 /* function prototypes */
-local void fixedtables OF((struct inflate_state FAR *state));
+static void fixedtables OF((struct inflate_state FAR *state));
 
 /*
    strm provides memory allocation functions in zalloc and zfree, or
@@ -25,12 +25,13 @@ local void fixedtables OF((struct inflate_state FAR *state));
    windowBits is in the range 8..15, and window is a user-supplied
    window and output buffer that is 2**windowBits bytes.
  */
-int ZEXPORT inflateBackInit_(strm, windowBits, window, version, stream_size)
-z_streamp strm;
-int windowBits;
-unsigned char FAR *window;
-const char *version;
-int stream_size;
+int ZEXPORT inflateBackInit_
+    ( z_streamp          strm
+    , int                windowBits
+    , unsigned char FAR  *window
+    , const char         *version
+    , int                stream_size
+    )
 {
     struct inflate_state FAR *state;
 
@@ -79,8 +80,9 @@ int stream_size;
    used for threaded applications, since the rewriting of the tables and virgin
    may not be thread-safe.
  */
-local void fixedtables(state)
-struct inflate_state FAR *state;
+static void fixedtables
+    ( struct inflate_state FAR  *state
+    )
 {
 #ifdef BUILDFIXED
     static int virgin = 1;
@@ -89,7 +91,7 @@ struct inflate_state FAR *state;
 
     /* build fixed huffman tables if first call (may not be thread safe) */
     if (virgin) {
-        unsigned sym, bits;
+        uint32_t sym, bits;
         static code *next;
 
         /* literal/length table */
@@ -182,19 +184,19 @@ struct inflate_state FAR *state;
    an error. */
 #define NEEDBITS(n) \
     do { \
-        while (bits < (unsigned)(n)) \
+        while (bits < (uint32_t)(n)) \
             PULLBYTE(); \
     } while (0)
 
 /* Return the low n bits of the bit accumulator (n < 16) */
 #define BITS(n) \
-    ((unsigned)hold & ((1U << (n)) - 1))
+    ((uint32_t)hold & ((1U << (n)) - 1))
 
 /* Remove n bits from the bit accumulator */
 #define DROPBITS(n) \
     do { \
         hold >>= (n); \
-        bits -= (unsigned)(n); \
+        bits -= (uint32_t)(n); \
     } while (0)
 
 /* Remove zero to seven bits as needed to go to a byte boundary */
@@ -247,24 +249,25 @@ struct inflate_state FAR *state;
    inflateBack() can also return Z_STREAM_ERROR if the input parameters
    are not correct, i.e. strm is Z_NULL or the state was not initialized.
  */
-int ZEXPORT inflateBack(strm, in, in_desc, out, out_desc)
-z_streamp strm;
-in_func in;
-void FAR *in_desc;
-out_func out;
-void FAR *out_desc;
+int ZEXPORT inflateBack
+    ( z_streamp  strm
+    , in_func    in
+    , void FAR   *in_desc
+    , out_func   out
+    , void FAR   *out_desc
+    )
 {
     struct inflate_state FAR *state;
     z_const unsigned char FAR *next;    /* next input */
     unsigned char FAR *put;     /* next output */
-    unsigned have, left;        /* available input and output */
+    uint32_t have, left;        /* available input and output */
     unsigned long hold;         /* bit buffer */
-    unsigned bits;              /* bits in bit buffer */
-    unsigned copy;              /* number of stored or match bytes to copy */
+    uint32_t bits;              /* bits in bit buffer */
+    uint32_t copy;              /* number of stored or match bytes to copy */
     unsigned char FAR *from;    /* where to copy match bytes from */
     code here;                  /* current decoding table entry */
     code last;                  /* parent table entry */
-    unsigned len;               /* length to copy for repeats, bits to drop */
+    uint32_t len;               /* length to copy for repeats, bits to drop */
     int ret;                    /* return code */
     static const unsigned short order[19] = /* permutation of code lengths */
         {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
@@ -332,7 +335,7 @@ void FAR *out_desc;
                 state->mode = BAD;
                 break;
             }
-            state->length = (unsigned)hold & 0xffff;
+            state->length = (uint32_t)hold & 0xffff;
             Tracev((stderr, "inflate:       stored length %u\n",
                     state->length));
             INITBITS();
@@ -399,7 +402,7 @@ void FAR *out_desc;
             while (state->have < state->nlen + state->ndist) {
                 for (;;) {
                     here = state->lencode[BITS(state->lenbits)];
-                    if ((unsigned)(here.bits) <= bits) break;
+                    if ((uint32_t)(here.bits) <= bits) break;
                     PULLBYTE();
                 }
                 if (here.val < 16) {
@@ -415,7 +418,7 @@ void FAR *out_desc;
                             state->mode = BAD;
                             break;
                         }
-                        len = (unsigned)(state->lens[state->have - 1]);
+                        len = (uint32_t)(state->lens[state->have - 1]);
                         copy = 3 + BITS(2);
                         DROPBITS(2);
                     }
@@ -492,7 +495,7 @@ void FAR *out_desc;
             /* get a literal, length, or end-of-block code */
             for (;;) {
                 here = state->lencode[BITS(state->lenbits)];
-                if ((unsigned)(here.bits) <= bits) break;
+                if ((uint32_t)(here.bits) <= bits) break;
                 PULLBYTE();
             }
             if (here.op && (here.op & 0xf0) == 0) {
@@ -500,13 +503,13 @@ void FAR *out_desc;
                 for (;;) {
                     here = state->lencode[last.val +
                             (BITS(last.bits + last.op) >> last.bits)];
-                    if ((unsigned)(last.bits + here.bits) <= bits) break;
+                    if ((uint32_t)(last.bits + here.bits) <= bits) break;
                     PULLBYTE();
                 }
                 DROPBITS(last.bits);
             }
             DROPBITS(here.bits);
-            state->length = (unsigned)here.val;
+            state->length = (uint32_t)here.val;
 
             /* process literal */
             if (here.op == 0) {
@@ -535,7 +538,7 @@ void FAR *out_desc;
             }
 
             /* length code -- get extra bits, if any */
-            state->extra = (unsigned)(here.op) & 15;
+            state->extra = (uint32_t)(here.op) & 15;
             if (state->extra != 0) {
                 NEEDBITS(state->extra);
                 state->length += BITS(state->extra);
@@ -546,7 +549,7 @@ void FAR *out_desc;
             /* get distance code */
             for (;;) {
                 here = state->distcode[BITS(state->distbits)];
-                if ((unsigned)(here.bits) <= bits) break;
+                if ((uint32_t)(here.bits) <= bits) break;
                 PULLBYTE();
             }
             if ((here.op & 0xf0) == 0) {
@@ -554,7 +557,7 @@ void FAR *out_desc;
                 for (;;) {
                     here = state->distcode[last.val +
                             (BITS(last.bits + last.op) >> last.bits)];
-                    if ((unsigned)(last.bits + here.bits) <= bits) break;
+                    if ((uint32_t)(last.bits + here.bits) <= bits) break;
                     PULLBYTE();
                 }
                 DROPBITS(last.bits);
@@ -565,10 +568,10 @@ void FAR *out_desc;
                 state->mode = BAD;
                 break;
             }
-            state->offset = (unsigned)here.val;
+            state->offset = (uint32_t)here.val;
 
             /* get distance extra bits, if any */
-            state->extra = (unsigned)(here.op) & 15;
+            state->extra = (uint32_t)(here.op) & 15;
             if (state->extra != 0) {
                 NEEDBITS(state->extra);
                 state->offset += BITS(state->extra);
@@ -628,8 +631,9 @@ void FAR *out_desc;
     return ret;
 }
 
-int ZEXPORT inflateBackEnd(strm)
-z_streamp strm;
+int ZEXPORT inflateBackEnd
+    ( z_streamp  strm
+    )
 {
     if (strm == Z_NULL || strm->state == Z_NULL || strm->zfree == (free_func)0)
         return Z_STREAM_ERROR;

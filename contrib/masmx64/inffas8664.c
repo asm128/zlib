@@ -92,20 +92,22 @@
 /* 64   32 */ code const FAR *lcode;    /* ebp rbp  local strm->lencode */
 /* 72   36 */ code const FAR *dcode;    /*     r11  local strm->distcode */
 /* 80   40 */ size_t /*unsigned long */hold;       /* edx rdx  local strm->hold */
-/* 88   44 */ unsigned bits;            /* ebx rbx  local strm->bits */
-/* 92   48 */ unsigned wsize;           /*          window size */
-/* 96   52 */ unsigned write;           /*          window write index */
-/*100   56 */ unsigned lmask;           /*     r12  mask for lcode */
-/*104   60 */ unsigned dmask;           /*     r13  mask for dcode */
-/*108   64 */ unsigned len;             /*     r14  match length */
-/*112   68 */ unsigned dist;            /*     r15  match distance */
-/*116   72 */ unsigned status;          /*          set when state chng*/
+/* 88   44 */ uint32_t bits;            /* ebx rbx  local strm->bits */
+/* 92   48 */ uint32_t wsize;           /*          window size */
+/* 96   52 */ uint32_t write;           /*          window write index */
+/*100   56 */ uint32_t lmask;           /*     r12  mask for lcode */
+/*104   60 */ uint32_t dmask;           /*     r13  mask for dcode */
+/*108   64 */ uint32_t len;             /*     r14  match length */
+/*112   68 */ uint32_t dist;            /*     r15  match distance */
+/*116   72 */ uint32_t status;          /*          set when state chng*/
     } type_ar;
 #ifdef ASMINF
 
-void inflate_fast(strm, start)
-z_streamp strm;
-unsigned start;         /* inflate()'s starting value for strm->avail_out */
+void inflate_fast
+    ( z_streamp  strm
+    , uint32_t   start
+    )
+    /* inflate()'s starting value for strm->avail_out */
 {
     struct inflate_state FAR *state;
     type_ar ar;
@@ -172,10 +174,10 @@ unsigned start;         /* inflate()'s starting value for strm->avail_out */
     /* update state and return */
     strm->next_in = ar.in;
     strm->next_out = ar.out;
-    strm->avail_in = (unsigned)(ar.in < ar.last ?
+    strm->avail_in = (uint32_t)(ar.in < ar.last ?
                                 PAD_AVAIL_IN + (ar.last - ar.in) :
                                 PAD_AVAIL_IN - (ar.in - ar.last));
-    strm->avail_out = (unsigned)(ar.out < ar.end ?
+    strm->avail_out = (uint32_t)(ar.out < ar.end ?
                                  PAD_AVAIL_OUT + (ar.end - ar.out) :
                                  PAD_AVAIL_OUT - (ar.out - ar.end));
     state->hold = (unsigned long)ar.hold;

@@ -34,11 +34,11 @@
  */
 static int decrypt_byte(unsigned long* pkeys, const z_crc_t* pcrc_32_tab)
 {
-    unsigned temp;  /* POTENTIAL BUG:  temp*(temp^1) may overflow in an
+    uint32_t temp;  /* POTENTIAL BUG:  temp*(temp^1) may overflow in an
                      * unpredictable manner on 16-bit systems; not a problem
                      * with any known compiler so far, though */
 
-    temp = ((unsigned)(*(pkeys+2)) & 0xffff) | 2;
+    temp = ((uint32_t)(*(pkeys+2)) & 0xffff) | 2;
     return (int)(((temp * (temp ^ 1)) >> 8) & 0xff);
 }
 
@@ -98,7 +98,7 @@ static int crypthead(const char* passwd,      /* password string */
     int t;                       /* temporary */
     int c;                       /* random byte */
     unsigned char header[RAND_HEAD_LEN-2]; /* random header */
-    static unsigned calls = 0;   /* ensure different random header each time */
+    static uint32_t calls = 0;   /* ensure different random header each time */
 
     if (bufSize<RAND_HEAD_LEN)
       return 0;
@@ -109,7 +109,7 @@ static int crypthead(const char* passwd,      /* password string */
      */
     if (++calls == 1)
     {
-        srand((unsigned)(time(NULL) ^ ZCR_SEED2));
+        srand((uint32_t)(time(NULL) ^ ZCR_SEED2));
     }
     init_keys(passwd, pkeys, pcrc_32_tab);
     for (n = 0; n < RAND_HEAD_LEN-2; n++)

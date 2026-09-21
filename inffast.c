@@ -47,9 +47,11 @@
       requires stream->avail_out >= 258 for each loop to avoid checking for
       output space.
  */
-void ZLIB_INTERNAL inflate_fast(stream, initialOutputAvailable)
-z_streamp stream;
-unsigned initialOutputAvailable;         /* inflate()'s starting value for stream->avail_out */
+void ZLIB_INTERNAL inflate_fast
+    ( z_streamp  stream
+    , uint32_t   initialOutputAvailable
+    )
+    /* inflate()'s starting value for stream->avail_out */
 {
     struct inflate_state FAR *inflateState;
     z_const unsigned char FAR *inputNext;      /* local stream->next_in */
@@ -58,23 +60,23 @@ unsigned initialOutputAvailable;         /* inflate()'s starting value for strea
     unsigned char FAR *outputStart;     /* inflate()'s initial stream->next_out */
     unsigned char FAR *outputFastLimit;     /* while out < end, enough space available */
 #ifdef INFLATE_STRICT
-    unsigned maximumDistance;              /* maximum distance from zlib header */
+    uint32_t maximumDistance;              /* maximum distance from zlib header */
 #endif
-    unsigned windowSize;             /* window size or zero if not using window */
-    unsigned windowBytesAvailable;             /* valid bytes in the window */
-    unsigned windowWriteIndex;             /* window write index */
+    uint32_t windowSize;             /* window size or zero if not using window */
+    uint32_t windowBytesAvailable;             /* valid bytes in the window */
+    uint32_t windowWriteIndex;             /* window write index */
     unsigned char FAR *window;  /* allocated sliding window, if windowSize != 0 */
     unsigned long bitBuffer;         /* local stream->hold */
-    unsigned bitCount;              /* local stream->bits */
+    uint32_t bitCount;              /* local stream->bits */
     code const FAR *lengthTable;      /* local stream->lencode */
     code const FAR *distanceTable;      /* local stream->distcode */
-    unsigned lengthTableMask;             /* mask for first level of length codes */
-    unsigned distanceTableMask;             /* mask for first level of distance codes */
+    uint32_t lengthTableMask;             /* mask for first level of length codes */
+    uint32_t distanceTableMask;             /* mask for first level of distance codes */
     code currentEntry;                  /* retrieved table entry */
-    unsigned decodeValue;                /* code bits, operation, extra bits, or */
+    uint32_t decodeValue;                /* code bits, operation, extra bits, or */
                                 /*  window position, window bytes to copy */
-    unsigned matchLength;               /* match length, unused bytes */
-    unsigned matchDistance;              /* match distance */
+    uint32_t matchLength;               /* match length, unused bytes */
+    uint32_t matchDistance;              /* match distance */
     unsigned char FAR *matchSource;    /* where to copy match from */
 
     /* copy state to local variables */
@@ -109,10 +111,10 @@ unsigned initialOutputAvailable;         /* inflate()'s starting value for strea
         }
         currentEntry = lengthTable[bitBuffer & lengthTableMask];
       dolen:
-        decodeValue = (unsigned)(currentEntry.bits);
+        decodeValue = (uint32_t)(currentEntry.bits);
         bitBuffer >>= decodeValue;
         bitCount -= decodeValue;
-        decodeValue = (unsigned)(currentEntry.op);
+        decodeValue = (uint32_t)(currentEntry.op);
         if (decodeValue == 0) {                          /* literal */
             Tracevv((stderr, currentEntry.val >= 0x20 && currentEntry.val < 0x7f ?
                     "inflate:         literal '%c'\n" :
@@ -120,14 +122,14 @@ unsigned initialOutputAvailable;         /* inflate()'s starting value for strea
             *outputNext++ = (unsigned char)(currentEntry.val);
         }
         else if (decodeValue & 16) {                     /* length base */
-            matchLength = (unsigned)(currentEntry.val);
+            matchLength = (uint32_t)(currentEntry.val);
             decodeValue &= 15;                           /* number of extra bits */
             if (decodeValue) {
                 if (bitCount < decodeValue) {
                     bitBuffer += (unsigned long)(*inputNext++) << bitCount;
                     bitCount += 8;
                 }
-                matchLength += (unsigned)bitBuffer & ((1U << decodeValue) - 1);
+                matchLength += (uint32_t)bitBuffer & ((1U << decodeValue) - 1);
                 bitBuffer >>= decodeValue;
                 bitCount -= decodeValue;
             }
@@ -140,12 +142,12 @@ unsigned initialOutputAvailable;         /* inflate()'s starting value for strea
             }
             currentEntry = distanceTable[bitBuffer & distanceTableMask];
           dodist:
-            decodeValue = (unsigned)(currentEntry.bits);
+            decodeValue = (uint32_t)(currentEntry.bits);
             bitBuffer >>= decodeValue;
             bitCount -= decodeValue;
-            decodeValue = (unsigned)(currentEntry.op);
+            decodeValue = (uint32_t)(currentEntry.op);
             if (decodeValue & 16) {                      /* distance base */
-                matchDistance = (unsigned)(currentEntry.val);
+                matchDistance = (uint32_t)(currentEntry.val);
                 decodeValue &= 15;                       /* number of extra bits */
                 if (bitCount < decodeValue) {
                     bitBuffer += (unsigned long)(*inputNext++) << bitCount;
@@ -155,7 +157,7 @@ unsigned initialOutputAvailable;         /* inflate()'s starting value for strea
                         bitCount += 8;
                     }
                 }
-                matchDistance += (unsigned)bitBuffer & ((1U << decodeValue) - 1);
+                matchDistance += (uint32_t)bitBuffer & ((1U << decodeValue) - 1);
 #ifdef INFLATE_STRICT
                 if (matchDistance > maximumDistance) {
                     stream->msg = (char *)"invalid distance too far back";
@@ -166,7 +168,7 @@ unsigned initialOutputAvailable;         /* inflate()'s starting value for strea
                 bitBuffer >>= decodeValue;
                 bitCount -= decodeValue;
                 Tracevv((stderr, "inflate:         distance %u\n", matchDistance));
-                decodeValue = (unsigned)(outputNext - outputStart);     /* max distance in output */
+                decodeValue = (uint32_t)(outputNext - outputStart);     /* max distance in output */
                 if (matchDistance > decodeValue) {                /* see if copy from window */
                     decodeValue = matchDistance - decodeValue;             /* distance back in window */
                     if (decodeValue > windowBytesAvailable) {
@@ -298,8 +300,8 @@ unsigned initialOutputAvailable;         /* inflate()'s starting value for strea
     /* update state and return */
     stream->next_in = inputNext;
     stream->next_out = outputNext;
-    stream->avail_in = (unsigned)(inputNext < inputFastLimit ? 5 + (inputFastLimit - inputNext) : 5 - (inputNext - inputFastLimit));
-    stream->avail_out = (unsigned)(outputNext < outputFastLimit ?
+    stream->avail_in = (uint32_t)(inputNext < inputFastLimit ? 5 + (inputFastLimit - inputNext) : 5 - (inputNext - inputFastLimit));
+    stream->avail_out = (uint32_t)(outputNext < outputFastLimit ?
                                  257 + (outputFastLimit - outputNext) : 257 - (outputNext - outputFastLimit));
     inflateState->hold = bitBuffer;
     inflateState->bits = bitCount;

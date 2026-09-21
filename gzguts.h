@@ -110,12 +110,6 @@
 #  define snprintf _snprintf
 #endif
 
-#ifndef local
-#  define local static
-#endif
-/* since "static" is used to mean two completely different things in C, we
-   define "local" for the non-static meaning of "static", for readability
-   (compile with -Dlocal if your debugger can't find static symbols) */
 
 /* gz* functions always use library allocation functions */
 #ifndef STDC
@@ -177,8 +171,8 @@ typedef struct {
     int mode;               /* see gzip modes above */
     int fd;                 /* file descriptor */
     char *path;             /* path or fd for error messages */
-    unsigned size;          /* buffer size, zero if not allocated yet */
-    unsigned want;          /* requested buffer size, default is GZBUFSIZE */
+    uint32_t size;          /* buffer size, zero if not allocated yet */
+    uint32_t want;          /* requested buffer size, default is GZBUFSIZE */
     unsigned char *in;      /* input buffer (double-sized when writing) */
     unsigned char *out;     /* output buffer (double-sized when reading) */
     int direct;             /* 0 if processing gzip, 1 if transparent */
@@ -213,6 +207,6 @@ char ZLIB_INTERNAL *gz_strwinerror OF((DWORD error));
 #ifdef INT_MAX
 #  define GT_OFF(x) (sizeof(int) == sizeof(z_off64_t) && (x) > INT_MAX)
 #else
-unsigned ZLIB_INTERNAL gz_intmax OF((void));
+uint32_t ZLIB_INTERNAL gz_intmax OF((void));
 #  define GT_OFF(x) (sizeof(int) == sizeof(z_off64_t) && (x) > gz_intmax())
 #endif

@@ -119,8 +119,9 @@ uLong ZEXPORT zlibCompileFlags()
 #  endif
 int ZLIB_INTERNAL z_verbose = verbose;
 
-void ZLIB_INTERNAL z_error (m)
-    char *m;
+void ZLIB_INTERNAL z_error
+    ( char  *m
+    )
 {
     fprintf(stderr, "%s\n", m);
     exit(1);
@@ -130,8 +131,9 @@ void ZLIB_INTERNAL z_error (m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
-const char * ZEXPORT zError(errorCode)
-    int errorCode;
+const char * ZEXPORT zError
+    ( int  errorCode
+    )
 {
     return ERR_MSG(errorCode);
 }
@@ -146,10 +148,11 @@ const char * ZEXPORT zError(errorCode)
 
 #ifndef HAVE_MEMCPY
 
-void ZLIB_INTERNAL zmemcpy(destination, source, byteCount)
-    Bytef* destination;
-    const Bytef* source;
-    uInt  byteCount;
+void ZLIB_INTERNAL zmemcpy
+    ( Bytef        *destination
+    , const Bytef  *source
+    , uInt         byteCount
+    )
 {
     if (byteCount == 0) return;
     do {
@@ -157,10 +160,11 @@ void ZLIB_INTERNAL zmemcpy(destination, source, byteCount)
     } while (--byteCount != 0);
 }
 
-int ZLIB_INTERNAL zmemcmp(firstBytes, secondBytes, byteCount)
-    const Bytef* firstBytes;
-    const Bytef* secondBytes;
-    uInt  byteCount;
+int ZLIB_INTERNAL zmemcmp
+    ( const Bytef  *firstBytes
+    , const Bytef  *secondBytes
+    , uInt         byteCount
+    )
 {
     uInt iByte;
 
@@ -170,9 +174,10 @@ int ZLIB_INTERNAL zmemcmp(firstBytes, secondBytes, byteCount)
     return 0;
 }
 
-void ZLIB_INTERNAL zmemzero(destination, byteCount)
-    Bytef* destination;
-    uInt  byteCount;
+void ZLIB_INTERNAL zmemzero
+    ( Bytef  *destination
+    , uInt   byteCount
+    )
 {
     if (byteCount == 0) return;
     do {
@@ -199,14 +204,14 @@ void ZLIB_INTERNAL zmemzero(destination, byteCount)
 #define MAX_PTR 10
 /* 10*64K = 640K */
 
-local int next_ptr = 0;
+static int next_ptr = 0;
 
 typedef struct ptr_table_s {
     voidpf org_ptr;
     voidpf new_ptr;
 } ptr_table;
 
-local ptr_table table[MAX_PTR];
+static ptr_table table[MAX_PTR];
 /* This table is used to remember the original form of pointers
  * to large buffers (64K). Such pointers are normalized with a zero offset.
  * Since MSDOS is not a preemptive multitasking OS, this table is not
@@ -214,7 +219,7 @@ local ptr_table table[MAX_PTR];
  * a protected system like OS/2. Use Microsoft C instead.
  */
 
-voidpf ZLIB_INTERNAL zcalloc (voidpf allocatorContext, unsigned itemCount, unsigned size)
+voidpf ZLIB_INTERNAL zcalloc (voidpf allocatorContext, uint32_t itemCount, uint32_t size)
 {
     voidpf buf;
     ulg bsize = (ulg)itemCount*size;
@@ -302,19 +307,21 @@ extern voidp  calloc OF((uInt itemCount, uInt size));
 extern void   free   OF((voidpf allocation));
 #endif
 
-voidpf ZLIB_INTERNAL zcalloc (allocatorContext, itemCount, size)
-    voidpf allocatorContext;
-    unsigned itemCount;
-    unsigned size;
+voidpf ZLIB_INTERNAL zcalloc
+    ( voidpf    allocatorContext
+    , uint32_t  itemCount
+    , uint32_t  size
+    )
 {
     (void)allocatorContext;
     return sizeof(uInt) > 2 ? (voidpf)malloc(itemCount * size) :
                               (voidpf)calloc(itemCount, size);
 }
 
-void ZLIB_INTERNAL zcfree (allocatorContext, allocation)
-    voidpf allocatorContext;
-    voidpf allocation;
+void ZLIB_INTERNAL zcfree
+    ( voidpf  allocatorContext
+    , voidpf  allocation
+    )
 {
     (void)allocatorContext;
     free(allocation);

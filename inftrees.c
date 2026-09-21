@@ -29,32 +29,33 @@ const char inflate_copyright[] =
    table index bits.  It will differ if the request is greater than the
    longest code or if it is less than the shortest code.
  */
-int ZLIB_INTERNAL inflate_table(type, codeLengths, symbolCount, table, rootBitCount, sortedSymbols)
-codetype type;
-unsigned short FAR *codeLengths;
-unsigned symbolCount;
-code FAR * FAR *table;
-unsigned FAR *rootBitCount;
-unsigned short FAR *sortedSymbols;
+int ZLIB_INTERNAL inflate_table
+    ( codetype            type
+    , unsigned short FAR  *codeLengths
+    , uint32_t            symbolCount
+    , code FAR * FAR      *table
+    , uint32_t FAR        *rootBitCount
+    , unsigned short FAR  *sortedSymbols
+    )
 {
-    unsigned codeLength;               /* a code's length in bits */
-    unsigned iSymbol;               /* index of code symbols */
-    unsigned minimumCodeLength, maximumCodeLength;          /* minimum and maximum code lengths */
-    unsigned rootTableBits;              /* number of index bits for root table */
-    unsigned currentTableBits;              /* number of index bits for current table */
-    unsigned bitsToDrop;              /* code bits to drop for sub-table */
+    uint32_t codeLength;               /* a code's length in bits */
+    uint32_t iSymbol;               /* index of code symbols */
+    uint32_t minimumCodeLength, maximumCodeLength;          /* minimum and maximum code lengths */
+    uint32_t rootTableBits;              /* number of index bits for root table */
+    uint32_t currentTableBits;              /* number of index bits for current table */
+    uint32_t bitsToDrop;              /* code bits to drop for sub-table */
     int availablePrefixCodes;                   /* number of prefix codes available */
-    unsigned tableEntriesUsed;              /* code entries in table used */
-    unsigned huffmanCode;              /* Huffman code */
-    unsigned codeIncrement;              /* for incrementing code, index */
-    unsigned iReplicatedEntry;              /* index for replicating entries */
-    unsigned rootEntryBits;               /* low bits for current root entry */
-    unsigned rootTableMask;              /* mask for low rootTableBits bits */
+    uint32_t tableEntriesUsed;              /* code entries in table used */
+    uint32_t huffmanCode;              /* Huffman code */
+    uint32_t codeIncrement;              /* for incrementing code, index */
+    uint32_t iReplicatedEntry;              /* index for replicating entries */
+    uint32_t rootEntryBits;               /* low bits for current root entry */
+    uint32_t rootTableMask;              /* mask for low rootTableBits bits */
     code currentEntry;                  /* table entry for duplication */
     code FAR *nextTable;             /* next available space in table */
     const unsigned short FAR *baseValues;     /* base value table to use */
     const unsigned short FAR *extraBitValues;    /* extra bits table to use */
-    unsigned firstMatchSymbol;             /* use base and extra for symbol >= match */
+    uint32_t firstMatchSymbol;             /* use base and extra for symbol >= match */
     unsigned short codeLengthCounts[MAXBITS+1];    /* number of codes of each length */
     unsigned short codeLengthOffsets[MAXBITS+1];     /* offsets in table for each length */
     static const unsigned short lengthBaseValues[31] = { /* Length codes 257..285 base */
@@ -201,7 +202,7 @@ unsigned short FAR *sortedSymbols;
     nextTable = *table;              /* current table to fill in */
     currentTableBits = rootTableBits;                /* current table index bits */
     bitsToDrop = 0;                   /* current bits to drop from code for index */
-    rootEntryBits = (unsigned)(-1);       /* trigger new sub-table when codeLength > rootTableBits */
+    rootEntryBits = (uint32_t)(-1);       /* trigger new sub-table when codeLength > rootTableBits */
     tableEntriesUsed = 1U << rootTableBits;          /* use root table entries */
     rootTableMask = tableEntriesUsed - 1;            /* mask for comparing low */
 
