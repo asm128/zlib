@@ -82,28 +82,28 @@
 	<PropertyGroup Label="UserMacros" />
 	<PropertyGroup>
 		<_ProjectFileVersion>10.0.30128.1</_ProjectFileVersion>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\..\..\..\$(Platform).$(Configuration)\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\..\..\..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
+		<OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\$(Platform).$(Configuration)\</OutDir>
+		<IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
 		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
 		<GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|Win32'">$(ProjectDir)..\..\..\..\$(Platform).$(Configuration)\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|Win32'">$(ProjectDir)..\..\..\..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
+		<OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|Win32'">$(SolutionDir)..\$(Platform).$(Configuration)\</OutDir>
+		<IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|Win32'">$(SolutionDir)..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
 		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|Win32'">false</LinkIncremental>
 		<GenerateManifest Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|Win32'">false</GenerateManifest>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\..\..\..\$(Platform).$(Configuration)\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\..\..\..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
+		<OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\$(Platform).$(Configuration)\</OutDir>
+		<IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
 		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
 		<GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)..\..\..\..\$(Platform).$(Configuration)\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)..\..\..\..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
+		<OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\$(Platform).$(Configuration)\</OutDir>
+		<IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
 		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
 		<GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</GenerateManifest>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|x64'">$(ProjectDir)..\..\..\..\$(Platform).$(Configuration)\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|x64'">$(ProjectDir)..\..\..\..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
+		<OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|x64'">$(SolutionDir)..\$(Platform).$(Configuration)\</OutDir>
+		<IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|x64'">$(SolutionDir)..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
 		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|x64'">false</LinkIncremental>
 		<GenerateManifest Condition="'$(Configuration)|$(Platform)'=='ReleaseWithoutAsm|x64'">false</GenerateManifest>
-		<OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)..\..\..\..\$(Platform).$(Configuration)\</OutDir>
-		<IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)..\..\..\..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
+		<OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\$(Platform).$(Configuration)\</OutDir>
+		<IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\obj\$(Platform).$(Configuration)\$(ProjectName)\</IntDir>
 		<LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
 		<GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</GenerateManifest>
 		<CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
